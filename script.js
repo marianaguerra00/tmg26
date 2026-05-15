@@ -1,17 +1,27 @@
+// --- CREDENCIAIS ---
 const SUPABASE_URL = 'https://dbfnseioskgukskijmjj.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_kbCqQ36p2zzr1-emmawF2A_mc7CxpVT';
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let cfg = { tables: 6, seatsPerTable: 8, eventName: 'Gala de Engenharia Mecânica', adminCode: '1234' };
+// CONFIGURAÇÃO ESTÁTICA
+const cfg = {
+    tables: 10,
+    seatsPerTable: 12,
+    eventName: 'Reserva de Lugares',
+    adminCode: '1234'
+};
+
 let reservations = {};
 let selectedSeat = null;
 
 async function init() {
-    await loadConfig();
+    document.getElementById('event-title').textContent = cfg.eventName;
+
     await loadReservations();
     buildSala();
 
-    client.channel('schema-db-changes')
+    // Escuta alterações em tempo real
+    client.channel('public-reservations')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations' }, () => {
             loadReservations().then(() => {
                 buildSala();
@@ -21,14 +31,6 @@ async function init() {
             });
         })
         .subscribe();
-}
-
-async function loadConfig() {
-    const { data, error } = await client.from('config').select('*').single();
-    if (data) {
-        cfg = { tables: data.tables, seatsPerTable: data.seats_per_table, eventName: data.event_name, adminCode: data.admin_code };
-        document.getElementById('event-title').textContent = cfg.eventName;
-    }
 }
 
 async function loadReservations() {
@@ -41,11 +43,17 @@ async function loadReservations() {
     }
 }
 
-function showView(v, btn) {
+// FUNÇÃO DE NAVEGAÇÃO REINTEGRADA
+function showView(v) {
     document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
     document.getElementById('view-' + v).classList.add('active');
-    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Oculta o botão "Área Restrita" se estivermos na aba de administração
+    const footerAdmin = document.getElementById('footer-admin');
+    if (footerAdmin) {
+        footerAdmin.style.display = (v === 'admin-view') ? 'none' : 'block';
+    }
 }
 
 function buildSala() {
@@ -94,7 +102,6 @@ function buildSala() {
                 seat.onclick = () => openInfoModal(t, s, key);
             } else {
                 seat.onclick = () => openModal(t, s, key);
-                seat.title = `Livre - Clica para reservar`;
             }
             mesa.appendChild(seat);
         }
@@ -138,11 +145,22 @@ async function confirmReservation() {
     if (!name) return toast('Por favor, introduz o teu nome.');
     if (!selectedSeat) return;
 
+    // Captura o botão e ativa o estado de loading
+    const btn = document.querySelector('.btn-confirm');
+    const originalText = btn.textContent;
+    btn.textContent = 'A processar...';
+    btn.disabled = true;
+
+    // Aguarda a resposta do servidor
     const { error } = await client.from('reservations').insert([{ id: selectedSeat.key, name: name }]);
+
+    // Restaura o botão independentemente do resultado
+    btn.textContent = originalText;
+    btn.disabled = false;
 
     if (error) {
         if (error.code === '23505') toast('Lugar ou nome já registado.');
-        else toast('Erro de comunicação.');
+        else toast('Erro de comunicação. Tenta novamente.');
         return;
     }
 

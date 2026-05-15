@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Mec Gala '26</title>
+    <link rel="icon" href="logo.png" type="image/png">
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap"
         rel="stylesheet">
@@ -13,17 +14,11 @@
 </head>
 
 <body>
+    <div id="banner-topo"></div>
 
     <div id="header">
         <h1 id="event-title">A carregar...</h1>
-        <p1>by NEEMec</p1>
-        <p>Reserva de Lugares</p>
         <div class="subtitle" id="header-subtitle">A carregar mesas...</div>
-    </div>
-
-    <div id="nav">
-        <button class="nav-btn active" onclick="showView('reservas', this)">Reservar Lugar</button>
-        <button class="nav-btn" onclick="showView('admin-view', this)">Administração</button>
     </div>
 
     <div id="view-reservas" class="view active">
@@ -33,13 +28,20 @@
                 <div class="leg-dot free"></div><span>Disponível</span>
             </div>
             <div class="leg">
-                <div class="leg-dot taken"></div><span>Ocupado — clica para ver quem está</span>
+                <div class="leg-dot taken"></div><span>Ocupado (clica para ver quem está)</span>
             </div>
         </div>
         <div id="sala"></div>
+
+        <div id="footer-admin"
+            style="text-align: center; padding: 3rem 1rem 1rem; border-top: 1px solid var(--border); margin-top: 2rem;">
+            <button class="btn-sm" onclick="showView('admin-view')">Administração</button>
+        </div>
     </div>
 
     <div id="view-admin-view" class="view">
+        <button class="btn-sm" onclick="showView('reservas')" style="margin-bottom: 2rem;">← Voltar às Reservas</button>
+
         <div id="admin-login">
             <p>Introduzir código de acesso</p>
             <div class="field">
@@ -80,7 +82,7 @@
             <h3>Reservar Lugar</h3>
             <div class="seat-info" id="modal-seat-info"></div>
             <div class="field" style="margin-bottom:0">
-                <label>O teu nome completo</label>
+                <label>Nome completo</label>
                 <input type="text" id="modal-name" placeholder="Ex: Ana Silva"
                     onkeydown="if(event.key==='Enter')confirmReservation()">
             </div>
