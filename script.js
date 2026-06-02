@@ -8,7 +8,7 @@ const cfg = {
     tables: 10,
     seatsPerTable: 12,
     eventName: 'Reserva de Lugares',
-    adminCode: '1234'
+    adminCode: '2526'
 };
 
 let reservations = {};

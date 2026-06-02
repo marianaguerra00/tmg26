@@ -476,13 +476,13 @@ td {
 
 #banner-topo {
     width: 100%;
-    height: 250px;
+    height: 150px;
     background: url('banner.jpg') center/cover no-repeat;
     border-bottom: 1px solid var(--border);
 }
 
 @media(min-width: 768px) {
     #banner-topo {
-        height: 400px;
+        height: 200px;
     }
 }
