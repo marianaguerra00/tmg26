@@ -5,10 +5,9 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // CONFIGURAÇÃO ESTÁTICA
 const cfg = {
-    tables: 10,
-    seatsPerTable: 12,
-    eventName: 'Reserva de Lugares',
-    adminCode: '2526'
+    tables: 13,
+    seatsPerTable: 11,
+    eventName: 'Reserva de Lugares'
 };
 
 let reservations = {};
@@ -23,12 +22,7 @@ async function init() {
     // Escuta alterações em tempo real
     client.channel('public-reservations')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations' }, () => {
-            loadReservations().then(() => {
-                buildSala();
-                if (document.getElementById('view-admin-view').classList.contains('active') && document.getElementById('admin-panel').style.display === 'block') {
-                    renderReservationsTable();
-                }
-            });
+            loadReservations().then(buildSala);
         })
         .subscribe();
 }
@@ -40,19 +34,6 @@ async function loadReservations() {
             acc[row.id] = { name: row.name };
             return acc;
         }, {});
-    }
-}
-
-// FUNÇÃO DE NAVEGAÇÃO REINTEGRADA
-function showView(v) {
-    document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
-    document.getElementById('view-' + v).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Oculta o botão "Área Restrita" se estivermos na aba de administração
-    const footerAdmin = document.getElementById('footer-admin');
-    if (footerAdmin) {
-        footerAdmin.style.display = (v === 'admin-view') ? 'none' : 'block';
     }
 }
 
@@ -169,56 +150,6 @@ async function confirmReservation() {
 }
 
 // ADMINISTRAÇÃO
-function checkAdmin() {
-    const val = document.getElementById('admin-code-input').value;
-    if (val === cfg.adminCode) {
-        document.getElementById('admin-login').style.display = 'none';
-        document.getElementById('admin-panel').style.display = 'block';
-        renderReservationsTable();
-    } else {
-        toast('Código incorreto.');
-    }
-}
-
-function renderReservationsTable() {
-    const tbody = document.getElementById('res-tbody');
-    const entries = Object.entries(reservations);
-    if (!entries.length) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1rem">Nenhuma reserva</td></tr>';
-        return;
-    }
-    tbody.innerHTML = entries.map(([key, v]) => {
-        const [tm, sm] = key.split('_');
-        return `<tr><td>${v.name}</td><td>${tm.replace('t', 'Mesa ')}</td><td>Lugar ${sm.replace('s', '')}</td><td><button class="del-btn" onclick="deleteReservation('${key}')">Apagar</button></td></tr>`;
-    }).join('');
-}
-
-async function deleteReservation(key) {
-    if (!confirm('Apagar esta reserva?')) return;
-    const { error } = await client.from('reservations').delete().eq('id', key);
-    if (error) toast('Erro ao apagar.');
-    else toast('Reserva apagada.');
-}
-
-async function clearAll() {
-    if (!confirm('Tem a certeza que quer apagar TODAS as reservas?')) return;
-    const { error } = await client.from('reservations').delete().neq('id', '0');
-    if (error) toast('Erro ao limpar base de dados.');
-    else toast('Todas as reservas apagadas.');
-}
-
-function exportCSV() {
-    const rows = [['Nome', 'Mesa', 'Lugar']];
-    Object.entries(reservations).forEach(([key, v]) => {
-        const [tm, sm] = key.split('_');
-        rows.push([v.name, tm.replace('t', 'Mesa '), sm.replace('s', 'Lugar ')]);
-    });
-    const csv = rows.map(r => r.map(c => '"' + c + '"').join(',')).join('\n');
-    const a = document.createElement('a');
-    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'reservas_gala.csv';
-    a.click();
-}
 
 function toast(msg) {
     const t = document.getElementById('toast');

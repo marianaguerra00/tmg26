@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Mec Gala '26</title>
+    <title>The Mec Gala</title>
     <link rel="icon" href="logo.png" type="image/png">
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap"
@@ -22,58 +22,21 @@
     </div>
 
     <div id="view-reservas" class="view active">
+
+        <div id="mapa-mesas">
+            <img src="mesas.png" alt="Planta das Mesas da Gala">
+        </div>
+
         <div id="stats-bar"></div>
         <div id="legend">
             <div class="leg">
                 <div class="leg-dot free"></div><span>Disponível</span>
             </div>
             <div class="leg">
-                <div class="leg-dot taken"></div><span>Ocupado (clica para ver quem está)</span>
+                <div class="leg-dot taken"></div><span>Ocupado — clica para ver quem está</span>
             </div>
         </div>
         <div id="sala"></div>
-
-        <div id="footer-admin"
-            style="text-align: center; padding: 3rem 1rem 1rem; border-top: 1px solid var(--border); margin-top: 2rem;">
-            <button class="btn-sm" onclick="showView('admin-view')">Administração</button>
-        </div>
-    </div>
-
-    <div id="view-admin-view" class="view">
-        <button class="btn-sm" onclick="showView('reservas')" style="margin-bottom: 2rem;">← Voltar às Reservas</button>
-
-        <div id="admin-login">
-            <p>Introduzir código de acesso</p>
-            <div class="field">
-                <input type="password" id="admin-code-input" placeholder="••••"
-                    onkeydown="if(event.key==='Enter')checkAdmin()">
-            </div>
-            <button class="btn-primary" onclick="checkAdmin()">Entrar</button>
-        </div>
-
-        <div id="admin-panel" style="display:none">
-            <h2>Painel de Administração</h2>
-            <div class="admin-section">
-                <h3>Lista de Reservas</h3>
-                <table id="reservations-table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Mesa</th>
-                            <th>Lugar</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="res-tbody"></tbody>
-                </table>
-                <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap">
-                    <button class="btn-sm btn-danger" onclick="clearAll()">Apagar todas as reservas</button>
-                    <button class="btn-sm"
-                        style="background:var(--bg3);color:var(--text);border:1px solid var(--border)"
-                        onclick="exportCSV()">Exportar CSV</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="modal-overlay">
@@ -82,7 +45,7 @@
             <h3>Reservar Lugar</h3>
             <div class="seat-info" id="modal-seat-info"></div>
             <div class="field" style="margin-bottom:0">
-                <label>Nome completo</label>
+                <label>O teu nome completo</label>
                 <input type="text" id="modal-name" placeholder="Ex: Ana Silva"
                     onkeydown="if(event.key==='Enter')confirmReservation()">
             </div>

@@ -481,6 +481,25 @@ td {
     border-bottom: 1px solid var(--border);
 }
 
+#mapa-mesas {
+    max-width: 800px;
+    margin: 0 auto 2.5rem auto;
+    text-align: center;
+}
+
+#mapa-mesas img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+#mapa-mesas img:hover {
+    opacity: 1;
+}
+
 @media(min-width: 768px) {
     #banner-topo {
         height: 200px;
